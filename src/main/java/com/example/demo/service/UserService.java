@@ -5,6 +5,7 @@ import com.example.demo.repositorie.UserRepositorie;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -16,16 +17,10 @@ public class UserService {
         this.userRepositorie = userRepositorie1;
     }
 
-    //service insertion et mise à jour
-    public void setUser(User user)
+    //service insertion
+    public User setUser(User user)
     {
-        //verifier que les champs ne sont pas vide
-        if((!user.getPrenom().isEmpty())&&(!user.getNom().isEmpty()))
-        {
-            //inserer l'objet dans la base de données
-            userRepositorie.save(user);
-            System.out.println("Ajout éffectué");
-        }
+        return userRepositorie.save(user);
     }
 
     //retourner la liste des users
@@ -35,9 +30,10 @@ public class UserService {
     }
 
     //retourner un user grace à son Id
-    public User getByNom(String nom)
+    public User getById(Long id)
     {
-        return userRepositorie.findByNom(nom);
+        Optional<User> user = userRepositorie.findById(id);
+        return user.orElse(null);
     }
 
     //effacer un user grace à son Id
@@ -46,7 +42,19 @@ public class UserService {
         userRepositorie.deleteById(id);
     }
 
+    //modifier un user
+    public void updateUser(User user)
+    {
+        //je recupère le user
+        Optional<User> userOptional = userRepositorie.findById(user.getId());
+        if(userOptional.isPresent())
+        {
+            userOptional.get().setNom(user.getNom());
+            userOptional.get().setPrenom(user.getPrenom());
+            userRepositorie.save(userOptional.get());
+        }
 
+    }
 
 
 }

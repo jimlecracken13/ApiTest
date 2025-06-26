@@ -2,51 +2,54 @@ package com.example.demo.controller;
 
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
 
-    UserService service;
+    private final UserService service;
     //injection de dépendance
+    @Autowired
     public UserController(UserService userService)
     {
         this.service = userService;
     }
 
     //ajouter un nouvel utilisateur
-    @PostMapping("/user")
-    public void addUser(@RequestBody User user)
+    @PostMapping
+    public User addUser(@RequestBody User user)
     {
-        service.setUser(user);
+        return service.setUser(user);
+
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getAll()
     {
         return service.getAllUser();
     }
 
-    @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id)
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable("id") Long id)
     {
         service.deleteUser(id);
         return "Suppression éffectué";
     }
 
-    @GetMapping("/users/{nom}")
-    public User getUser(@PathVariable String nom)
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable("id") Long id)
     {
-        return service.getByNom(nom);
+        return service.getById(id);
     }
 
-    @PutMapping("/user")
-    public void updateUser(@RequestBody User user)
+    @PutMapping("/{id}")
+    public void updateUser(@PathVariable Long id, @RequestBody User user)
     {
-        service.setUser(user);
+        service.updateUser(user);
     }
 
 }
